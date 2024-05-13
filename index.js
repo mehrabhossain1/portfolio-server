@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
@@ -124,6 +124,24 @@ async function run() {
         res.json(projects);
       } catch (error) {
         console.error("Error fetching projects:", error);
+        res.status(500).json({ error: "Internal server error" });
+      }
+    });
+
+    app.get("/api/v1/projects/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+
+        const projects = await projectsCollection.findOne({
+          _id: new ObjectId(id),
+        });
+
+        if (!projects) {
+          return res.status(404).json({ error: "projects not found" });
+        }
+        res.json(projects);
+      } catch (error) {
+        console.error("Error fetching project:", error);
         res.status(500).json({ error: "Internal server error" });
       }
     });
