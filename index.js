@@ -27,6 +27,7 @@ async function run() {
 
     const db = client.db("portfolio");
     const collection = db.collection("users");
+    const projectsCollection = db.collection("projects");
 
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
@@ -84,6 +85,48 @@ async function run() {
     // ==============================================================
     // WRITE YOUR CODE HERE
     // ==============================================================
+
+    // Projects
+    app.post("/api/v1/projects", async (req, res) => {
+      try {
+        const {
+          title,
+          description,
+          image,
+          liveSite,
+          clientGithub,
+          serverGithub,
+        } = req.body;
+
+        // Insert the new product into the MongoDB collection
+        const result = await projectsCollection.insertOne({
+          title,
+          description,
+          image,
+          liveSite,
+          clientGithub,
+          serverGithub,
+        });
+
+        res.status(201).json({
+          message: "Project added successfully",
+          projectsId: result.insertedId,
+        });
+      } catch (error) {
+        console.error("Error adding project:", error);
+        res.status(500).json({ error: "Internal server error" });
+      }
+    });
+
+    app.get("/api/v1/projects", async (req, res) => {
+      try {
+        const projects = await projectsCollection.find({}).toArray();
+        res.json(projects);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        res.status(500).json({ error: "Internal server error" });
+      }
+    });
 
     // Start the server
     app.listen(port, () => {
