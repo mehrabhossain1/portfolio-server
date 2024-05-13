@@ -28,6 +28,7 @@ async function run() {
     const db = client.db("portfolio");
     const collection = db.collection("users");
     const projectsCollection = db.collection("projects");
+    const skillsCollection = db.collection("skills");
 
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
@@ -145,8 +146,39 @@ async function run() {
         res.status(500).json({ error: "Internal server error" });
       }
     });
+    // Projects end
 
-    // Projects
+    // Skills start
+    app.post("/api/v1/skills", async (req, res) => {
+      try {
+        const { title, image } = req.body;
+
+        // Insert the new product into the MongoDB collection
+        const result = await skillsCollection.insertOne({
+          title,
+          image,
+        });
+
+        res.status(201).json({
+          message: "Skill added successfully",
+          skillId: result.insertedId,
+        });
+      } catch (error) {
+        console.error("Error adding skill:", error);
+        res.status(500).json({ error: "Internal server error" });
+      }
+    });
+
+    app.get("/api/v1/skills", async (req, res) => {
+      try {
+        const skills = await skillsCollection.find({}).toArray();
+        res.json(skills);
+      } catch (error) {
+        console.error("Error fetching skills:", error);
+        res.status(500).json({ error: "Internal server error" });
+      }
+    });
+    // Skills end
 
     // Start the server
     app.listen(port, () => {
