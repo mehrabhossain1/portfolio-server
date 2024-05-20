@@ -72,14 +72,18 @@ async function run() {
       }
 
       // Generate JWT token
-      const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
-        expiresIn: process.env.EXPIRES_IN,
-      });
+      const accessToken = jwt.sign(
+        { email: user.email },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: process.env.EXPIRES_IN,
+        }
+      );
 
       res.json({
         success: true,
         message: "Login successful",
-        token,
+        accessToken,
       });
     });
 
