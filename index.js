@@ -36,6 +36,8 @@ async function run() {
 
       // Check if email already exists
       const existingUser = await collection.findOne({ email });
+
+      // If user already exists, return error
       if (existingUser) {
         return res.status(400).json({
           success: false,
